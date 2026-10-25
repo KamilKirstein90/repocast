@@ -1,0 +1,23 @@
+Du hast Zahlenzug jetzt lokal laufen, und in dieser Folge verschaffen wir uns den großen Überblick: Welche Teile gibt es, und wie spielen sie zusammen?
+
+Das Projekt ist angenehm flach. Im Hauptordner liegen die üblichen Konfigurationsdateien, also die package Datei, die TypeScript-Konfiguration und die Vite-Konfiguration. Daneben liegt die index Datei, also die HTML-Seite. Dann gibt es zwei Ordner: public und src. In public liegen Dateien, die Vite unverändert ausliefert, nämlich das Manifest der Progressive Web App, der Service Worker und das App-Symbol als SVG. In src liegt der eigentliche Spielcode: vier TypeScript-Dateien und eine CSS-Datei.
+
+Beginnen wir bei der HTML-Seite, denn sie ist das Gerüst. Dort ist die gesamte Szene bereits als statisches Markup angelegt. Es gibt eine Sonne, zwei Wolken, Hügel und Schienen, alles einfache div Elemente, die erst durch CSS zu Landschaft werden. Dazu kommen zwei wichtige leere Container: einer mit der Kennung train, in den die Lok und die angekoppelten Waggons gehängt werden, und einer mit der Kennung choices, in dem die Auswahlwaggons erscheinen. Außerdem gibt es das Zahnrad für die Einstellungen, ein Overlay mit dem großen Play-Knopf und einen nativen HTML-Dialog mit drei Auswahllisten für die Elterneinstellungen. Ganz unten bindet die Seite die Datei main als Modul ein. Das ist der Einstiegspunkt.
+
+Jetzt zu den vier TypeScript-Modulen. Man kann sie sich wie eine kleine Schichtung vorstellen.
+
+Ganz unten liegt die Datei game. Ein Kommentar ganz oben sagt, dass sie bewusst frei von DOM-Code gehalten ist. Sie kennt den Typ Settings mit den drei Feldern max, choices und speech, sie lädt und speichert diese Einstellungen im lokalen Speicher des Browsers, und sie enthält die eigentliche Spiellogik in Form der Funktion pickChoices. Diese Funktion entscheidet, welche Zahlen in der aktuellen Runde zur Auswahl stehen. Weil hier kein DOM angefasst wird, wäre das die Datei, die sich am leichtesten testen ließe.
+
+Daneben liegt die Datei train. Sie ist reine Grafik. Sie exportiert eine Farbfunktion, die jeder Zahl von eins bis zehn eine feste Farbe zuordnet, und zwei Fabrikfunktionen: makeLoco baut ein SVG-Element für die Lokomotive, makeWagon baut ein SVG-Element für einen Waggon mit einer bestimmten Zahl. Diese Datei weiß nichts über Spielregeln.
+
+Ebenfalls daneben liegt die Datei audio. Sie kapselt alles, was man hört. Sie enthält die deutschen Zahlwörter von null bis zehn, eine Funktion zum Sprechen über die Sprachsynthese des Browsers und ein Objekt namens sounds mit fünf Geräuschen: toot, click, boing, pop und fanfare. Außerdem gibt es eine Funktion unlockAudio, die nach dem ersten Tipp des Nutzers Audio freischaltet. Warum das nötig ist, besprechen wir in der Audio-Folge.
+
+Und ganz oben sitzt main, der Dirigent. Diese Datei importiert die anderen drei Module und verbindet sie mit der Seite. Sie hält den Spielzustand in ein paar einfachen Variablen auf Modulebene: welche Zahl als nächstes dran ist, ob gerade eine Animation läuft und Eingaben gesperrt sind, wie viele Fehltipps es gab, den Timer für den Hinweis und einen Rundenzähler. Hier stecken der Ablauf einer Runde, die Reaktion auf Tipps, alle Animationen mit Sternen, Konfetti und Dampfwolken, das Layout und die Einstellungslogik.
+
+Die Kommunikation ist dabei bewusst einseitig. Nur main ruft die anderen Module auf. Die Module game, train und audio kennen sich gegenseitig nicht und importieren nichts voneinander. Es gibt keinen Event-Bus, keinen Store, kein Framework, sondern einfach Funktionsaufrufe von oben nach unten. Bei einem Projekt dieser Größe ist das genau richtig.
+
+Bleibt noch das Styling. Die CSS-Datei zeichnet die Landschaft, positioniert Zug und Auswahl, und definiert Keyframe-Animationen für das Wackeln, das Pulsieren des Hinweises und das Drehen der Räder. Spannend ist das Zusammenspiel mit main: Die Größen der Waggons stehen nicht fest im CSS, sondern hängen an zwei CSS-Variablen, die main je nach Bildschirmgröße und Einstellungen berechnet und setzt. Darauf kommen wir in der Grafik-Folge zurück.
+
+Und schließlich der public Ordner: Das Manifest beschreibt die App für den Startbildschirm, also Name, Vollbild, Querformat und Farben. Der Service Worker sorgt für den Offline-Betrieb.
+
+In der nächsten Folge steigen wir ins erste Feature ein, den Kern des Spiels: Wie läuft eine Runde ab, und wie werden die Auswahlwaggons ausgewürfelt?

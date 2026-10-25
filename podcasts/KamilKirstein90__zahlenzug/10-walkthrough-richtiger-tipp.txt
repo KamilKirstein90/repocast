@@ -1,0 +1,23 @@
+Du kennst jetzt die Konzepte, und heute setzen wir alles zusammen: Wir verfolgen einen einzigen Fingertipp auf den richtigen Waggon von der Berührung bis zur nächsten Auswahl.
+
+Die Ausgangslage: Die Lok steht auf den Schienen, zwei Waggons hängen schon dran, also die Eins und die Zwei. Die Variable next steht auf drei. Unten warten drei Auswahlwaggons, sagen wir die Sieben, die Drei und die Fünf. Die Variable busy ist false, Eingaben sind also erlaubt. Und im Hintergrund tickt ein Hinweis-Timer, der in sechs Sekunden losgehen würde.
+
+Schritt eins. Das Kind berührt den Waggon mit der Drei. Der Browser feuert ein pointerdown Ereignis auf dem Button. Beim Erzeugen in showChoices wurde dort ein Listener registriert, der die Funktion onPick mit der Zahl drei und dem Button selbst aufruft. Die Zahl steckt dabei in einer Closure, sie muss also nicht aus dem DOM gelesen werden.
+
+Schritt zwei, in onPick. Zuerst wird busy geprüft. Würde gerade eine Animation laufen, wäre hier sofort Schluss. Ein wildes Mehrfach-Tippen mit der ganzen Hand wird so abgefangen. Dann wird die Zahl mit next verglichen. Drei gleich drei, also richtig. Der Zweig für falsche Tipps wird übersprungen. Jetzt wird busy auf true gesetzt, der Hinweis-Timer gelöscht, und die asynchrone Funktion couple gestartet. Das void davor sagt dem Leser und den Lint-Werkzeugen: Ich will dieses Promise bewusst nicht abwarten.
+
+Schritt drei, der Anfang von couple. Zuerst wird das SVG im getippten Button gesucht. Alle anderen Auswahlbuttons, also Sieben und Fünf, werden in einer Viertelsekunde ausgeblendet. Dann wird ein neuer Waggon mit der Drei erzeugt, unsichtbar gemacht und ans Ende des Zuges gehängt. Er nimmt dort schon seinen Platz im Layout ein, ist aber nicht zu sehen. Nun werden zwei Rechtecke gemessen: wo der Quell-Waggon unten gerade ist, und wo der Ziel-Waggon oben landen wird.
+
+Schritt vier, der Flieger. Ein dritter Waggon mit der Drei wird erzeugt, bekommt die Klasse flyer und wird mit fester Position exakt über den Quell-Waggon gelegt, mit derselben Breite und Höhe. Er wird direkt an den body gehängt, damit er über allem schweben kann. Der Original-Waggon im Button wird unsichtbar, und falls der Button gerade pulsiert hat, wird die Hinweisklasse entfernt. Für das Kind sieht es so aus, als ob sich der Waggon selbst löst.
+
+Schritt fünf, der Flug. Aus den Rechtecken werden die Verschiebung in x und y sowie der Skalierungsfaktor berechnet, denn die Zugwaggons sind meist kleiner als die Auswahlwaggons. Dann startet die Animation mit dem Bogen über den Zwischenpunkt, achthundertfünfzig Millisekunden lang, und couple wartet mit await auf das Ende.
+
+Schritt sechs, die Landung. Der Flieger wird entfernt, und im selben Moment wird der unsichtbare Ziel-Waggon im Zug sichtbar gemacht. Weil beide exakt an derselben Stelle in derselben Größe sind, merkt man den Austausch nicht. Jetzt kommt das Feuerwerk an Rückmeldungen: Das Klick-Geräusch ertönt, die Stimme sagt "Drei!", neun Sterne in Gelb und der Waggonfarbe fliegen kreisförmig auseinander, und der ganze Zug ruckt kurz um sechs Pixel nach links und zurück, als hätte er den Stoß der Kupplung gespürt. Der leere Button wird ausgeblendet.
+
+Schritt sieben, der Zustand. Die Variable next wird auf vier erhöht. Dann die Abfrage: Ist vier größer als das Maximum? Bei Maximum zehn nein. Also wartet couple neunhundert Millisekunden, damit Ton und Sterne wirken können, und ruft dann showChoices auf.
+
+Schritt acht, die neue Auswahl. Die Funktion showChoices leert den Auswahlbereich, setzt die Fehltipps auf null, holt mit pickChoices drei neue Zahlen, darunter garantiert die Vier, baut die Buttons und lässt sie aufploppen. Ein Pop ertönt, busy wird wieder false, und ein neuer Sechs-Sekunden-Timer für den Hinweis startet. Der Kreis schließt sich.
+
+Wäre die Drei die letzte Zahl gewesen, hätte couple stattdessen finish aufgerufen: kurze Pause, Fanfare, "Super gemacht!", Konfetti, dann fährt der Zug mit Dampfwölkchen aus dem Bild, und das Overlay mit dem Play-Knopf kehrt zurück.
+
+In der nächsten Folge wird es kritisch: Wir bewerten die Codequalität von Zahlenzug ehrlich in sechs Kategorien.

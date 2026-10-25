@@ -1,0 +1,416 @@
+{
+  "repo": "KamilKirstein90/zahlenzug",
+  "title": "Zahlenzug – ein Zählspiel unter der Lupe",
+  "description": "Eine Lernserie über Zahlenzug, eine Progressive Web App in TypeScript, in der Kleinkinder einen Zug aus Zahlenwaggons zusammenbauen – mit SVG-Grafik, synthetisiertem Ton und ganz ohne Framework.",
+  "lang": "de",
+  "mode": "learn",
+  "episodes": [
+    {
+      "n": 1,
+      "file": "01-was-ist-zahlenzug",
+      "title": "Was ist Zahlenzug?",
+      "summary": "Ein Zählspiel für Zwei- bis Dreijährige als PWA, gebaut ohne Framework, ohne Engine und ohne Asset-Dateien.",
+      "kind": "overview",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "README.md",
+          "startLine": 24,
+          "endLine": 34,
+          "note": "Spielregeln und Reaktionen des Spiels auf einen Blick"
+        },
+        {
+          "path": "index.html",
+          "startLine": 12,
+          "endLine": 25,
+          "note": "Die Szene: Landschaft, Zug- und Auswahl-Container, Overlay"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/01-was-ist-zahlenzug.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/01-was-ist-zahlenzug.txt"
+    },
+    {
+      "n": 2,
+      "file": "02-installation-und-start",
+      "title": "Installation und erster Start",
+      "summary": "Vom Klonen über den Dev-Server im WLAN bis zum Deployment auf GitHub Pages.",
+      "kind": "install",
+      "commands": [
+        "git clone https://github.com/KamilKirstein90/zahlenzug.git",
+        "cd zahlenzug",
+        "npm install",
+        "npm run dev",
+        "npm run build",
+        "npm run preview",
+        "npm run deploy"
+      ],
+      "snippets": [
+        {
+          "path": "package.json",
+          "startLine": 6,
+          "endLine": 16,
+          "note": "Skripte (vite --host, tsc && vite build, gh-pages) und die drei Dev-Abhängigkeiten"
+        },
+        {
+          "path": "vite.config.ts",
+          "startLine": 1,
+          "endLine": 4,
+          "note": "Relativer Basispfad für GitHub Pages und Capacitor"
+        },
+        {
+          "path": "tsconfig.json",
+          "startLine": 2,
+          "endLine": 11,
+          "note": "strict und noEmit: tsc dient nur als Typprüfer"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/02-installation-und-start.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/02-installation-und-start.txt"
+    },
+    {
+      "n": 3,
+      "file": "03-architektur",
+      "title": "Architektur: vier Module und ein Dirigent",
+      "summary": "main.ts orchestriert die DOM-freie Spiellogik, die SVG-Grafik und das Audio-Modul.",
+      "kind": "architecture",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "src/main.ts",
+          "startLine": 1,
+          "endLine": 21,
+          "note": "Imports der drei Module und der Spielzustand als Modulvariablen"
+        },
+        {
+          "path": "src/game.ts",
+          "startLine": 1,
+          "endLine": 6,
+          "note": "DOM-freies Modul: Settings-Typ und Standardwerte"
+        },
+        {
+          "path": "README.md",
+          "startLine": 57,
+          "endLine": 63,
+          "note": "Dateiübersicht aus der Projektbeschreibung"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/03-architektur.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/03-architektur.txt"
+    },
+    {
+      "n": 4,
+      "file": "04-spielablauf-und-logik",
+      "title": "Spielablauf und Auswahl-Logik",
+      "summary": "Wie eine Runde startet, wie pickChoices die Waggons auswürfelt und wie Tipps ausgewertet werden.",
+      "kind": "feature",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "src/game.ts",
+          "startLine": 24,
+          "endLine": 38,
+          "note": "Fisher-Yates-Shuffle und pickChoices"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 44,
+          "endLine": 61,
+          "note": "startRound mit Rundenzähler"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 63,
+          "endLine": 86,
+          "note": "showChoices und Hinweis-Timer"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 88,
+          "endLine": 101,
+          "note": "onPick: falscher Tipp mit Reflow-Trick, richtiger Tipp startet couple"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/04-spielablauf-und-logik.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/04-spielablauf-und-logik.txt"
+    },
+    {
+      "n": 5,
+      "file": "05-grafik-svg-und-layout",
+      "title": "Grafik: SVG von Hand und ein responsives Layout",
+      "summary": "Lok und Waggons als SVG-Strings, abgeleitete Farbtöne und CSS-Variablen für jede Bildschirmgröße.",
+      "kind": "feature",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "src/train.ts",
+          "startLine": 5,
+          "endLine": 19,
+          "note": "Farbpalette, colorFor und die shade-Funktion"
+        },
+        {
+          "path": "src/train.ts",
+          "startLine": 56,
+          "endLine": 67,
+          "note": "makeWagon mit Zahl und paint-order-Kontur"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 23,
+          "endLine": 31,
+          "note": "layout berechnet die CSS-Variablen --u und --c"
+        },
+        {
+          "path": "src/style.css",
+          "startLine": 104,
+          "endLine": 110,
+          "note": "Größen relativ zu --u und rotierende Räder bei .driving"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/05-grafik-svg-und-layout.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/05-grafik-svg-und-layout.txt"
+    },
+    {
+      "n": 6,
+      "file": "06-ton-und-sprache",
+      "title": "Ton und Sprache aus dem Browser",
+      "summary": "Deutsche Zahlwörter über die Web Speech API und synthetisierte Effekte über die Web Audio API.",
+      "kind": "feature",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "src/audio.ts",
+          "startLine": 8,
+          "endLine": 13,
+          "note": "unlockAudio: Audio und Sprache nach Nutzergeste freischalten"
+        },
+        {
+          "path": "src/audio.ts",
+          "startLine": 23,
+          "endLine": 35,
+          "note": "say und sayNumber mit deutscher Stimme"
+        },
+        {
+          "path": "src/audio.ts",
+          "startLine": 37,
+          "endLine": 51,
+          "note": "tone: Oszillator mit exponentieller Hüllkurve"
+        },
+        {
+          "path": "src/audio.ts",
+          "startLine": 53,
+          "endLine": 74,
+          "note": "Die fünf Geräusche"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/06-ton-und-sprache.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/06-ton-und-sprache.txt"
+    },
+    {
+      "n": 7,
+      "file": "07-elterneinstellungen-und-app-gefuehl",
+      "title": "Elterneinstellungen und App-Gefühl",
+      "summary": "Langes Drücken, nativer Dialog, localStorage mit Fallback sowie Vollbild, Manifest und gesperrtes Kontextmenü.",
+      "kind": "feature",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "src/game.ts",
+          "startLine": 8,
+          "endLine": 22,
+          "note": "loadSettings und saveSettings mit Standardwerten und try/catch"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 248,
+          "endLine": 274,
+          "note": "Langer Druck aufs Zahnrad und close-Handler des Dialogs"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 239,
+          "endLine": 246,
+          "note": "Play-Knopf: Audio freischalten, Vollbild, Querformat"
+        },
+        {
+          "path": "public/manifest.webmanifest",
+          "startLine": 1,
+          "endLine": 12,
+          "note": "PWA-Manifest mit fullscreen und landscape"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/07-elterneinstellungen-und-app-gefuehl.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/07-elterneinstellungen-und-app-gefuehl.txt"
+    },
+    {
+      "n": 8,
+      "file": "08-konzept-pwa-und-service-worker",
+      "title": "Konzept: Progressive Web Apps und Service Worker",
+      "summary": "Manifest, Service-Worker-Lebenszyklus und Caching-Strategien – und die network-first-Umsetzung in Zahlenzug.",
+      "kind": "concept",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "public/sw.js",
+          "startLine": 1,
+          "endLine": 22,
+          "note": "Der komplette Service Worker: skipWaiting, clients.claim, network first"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 280,
+          "endLine": 282,
+          "note": "Registrierung nur über HTTPS und außerhalb von Capacitor"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/08-konzept-pwa-und-service-worker.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/08-konzept-pwa-und-service-worker.txt"
+    },
+    {
+      "n": 9,
+      "file": "09-konzept-animationen-und-async",
+      "title": "Konzept: Web Animations API und async/await",
+      "summary": "Animationen als Promises, ein FLIP-artiger Flug und ein Rundenzähler gegen Race Conditions.",
+      "kind": "concept",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "src/main.ts",
+          "startLine": 109,
+          "endLine": 134,
+          "note": "Ziel messen, Flieger anlegen und im Bogen animieren"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 156,
+          "endLine": 177,
+          "note": "Sterne, die sich nach finished selbst entfernen"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 216,
+          "endLine": 237,
+          "note": "finish mit Rundenprüfung nach jedem await"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/09-konzept-animationen-und-async.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/09-konzept-animationen-und-async.txt"
+    },
+    {
+      "n": 10,
+      "file": "10-walkthrough-richtiger-tipp",
+      "title": "Was passiert, wenn das Kind den richtigen Waggon tippt?",
+      "summary": "Ein Fingertipp Schritt für Schritt von pointerdown über onPick und couple bis zur nächsten Auswahl.",
+      "kind": "walkthrough",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "src/main.ts",
+          "startLine": 66,
+          "endLine": 71,
+          "note": "Button mit Closure auf die Zahl und pointerdown-Listener"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 88,
+          "endLine": 101,
+          "note": "onPick: busy-Sperre und Vergleich mit next"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 103,
+          "endLine": 154,
+          "note": "couple: Flug, Landung, Feedback und Zustandswechsel"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/10-walkthrough-richtiger-tipp.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/10-walkthrough-richtiger-tipp.txt"
+    },
+    {
+      "n": 11,
+      "file": "11-code-review",
+      "title": "Code-Review: ehrlich bewertet",
+      "summary": "Sechs Kategorien bewertet – starke Struktur und null Laufzeitabhängigkeiten, aber keine Tests und eine Race Condition in couple.",
+      "kind": "review",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "src/main.ts",
+          "startLine": 147,
+          "endLine": 153,
+          "note": "Keine Rundenprüfung in couple: next++ und showChoices laufen auch nach einem Rundenwechsel"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 263,
+          "endLine": 274,
+          "note": "Schließen des Dialogs startet eine neue Runde – Auslöser der Race Condition"
+        },
+        {
+          "path": "src/game.ts",
+          "startLine": 32,
+          "endLine": 38,
+          "note": "Ideale Kandidatin für Unit-Tests"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/11-code-review.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/11-code-review.txt"
+    },
+    {
+      "n": 12,
+      "file": "12-fazit-und-einstieg",
+      "title": "Fazit und Einstieg in den Code",
+      "summary": "Stärken, Grenzen und eine empfohlene Lesereihenfolge für den eigenen Einstieg.",
+      "kind": "wrapup",
+      "commands": [
+        "npm install",
+        "npm run dev"
+      ],
+      "snippets": [
+        {
+          "path": "src/game.ts",
+          "startLine": 1,
+          "endLine": 38,
+          "note": "Erster Lesestopp: die komplette Spiellogik"
+        },
+        {
+          "path": "src/main.ts",
+          "startLine": 239,
+          "endLine": 246,
+          "note": "Einstieg in den Spielfluss beim Play-Knopf"
+        }
+      ],
+      "audio": "podcasts/KamilKirstein90__zahlenzug/12-fazit-und-einstieg.mp3",
+      "text": "podcasts/KamilKirstein90__zahlenzug/12-fazit-und-einstieg.txt"
+    }
+  ],
+  "review": {
+    "scores": {
+      "structure": 4,
+      "readability": 4,
+      "tests": 1,
+      "errorHandling": 3,
+      "security": 4,
+      "dependencies": 5
+    },
+    "good": [
+      "Klare Modulaufteilung: DOM-freie Spiellogik (game.ts), reine Grafik (train.ts), reiner Ton (audio.ts), Orchestrierung in main.ts",
+      "Konsequent auf die Zielgruppe zugeschnitten: keine Strafen, zeit- und fehlerbasierte Hinweise, pointerdown, gesperrtes Kontextmenü, langes Drücken für Elterneinstellungen",
+      "Keine Laufzeitabhängigkeiten und keine Asset-Dateien – SVG im Code und per Web Audio synthetisierte Töne",
+      "Lesbare Animationsabläufe dank Web Animations API und await auf finished",
+      "Rundenzähler als Generation-Token gegen veraltete asynchrone Abläufe in startRound und finish",
+      "Robuste Fallbacks für localStorage, Sprachsynthese, Vollbild und Orientierungssperre"
+    ],
+    "improve": [
+      "Race Condition: couple prüft nach await nicht die Runde; wird während eines Flugs eine neue Runde gestartet, wird next falsch erhöht und showChoices doppelt aufgerufen",
+      "Keine Tests – pickChoices und loadSettings ließen sich leicht mit Vitest absichern",
+      "Magische Zahlen im Layout und in Animationen benennen oder kommentieren; sehr knappe Namen wie u und c",
+      "main.ts aufteilen, z. B. Effekte (Sterne, Konfetti, Dampf) und Einstellungsdialog in eigene Module",
+      "Geladene Einstellungen nicht typgeprüft; Service Worker cached ungefiltert und räumt alte Caches nie auf",
+      "Barrierefreiheit: Auswahlbuttons ohne zugängliches Label"
+    ]
+  },
+  "url": "https://github.com/KamilKirstein90/zahlenzug",
+  "sha": "99d14835da3188eeac1ded55b9ce25f3797770ae",
+  "voice": "de-DE-ConradNeural",
+  "created": "2026-10-25T15:12:21+00:00"
+}

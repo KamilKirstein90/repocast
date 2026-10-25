@@ -1,0 +1,14 @@
+{
+  "podcasts": [
+    {
+      "repo": "KamilKirstein90/zahlenzug",
+      "title": "Zahlenzug – ein Zählspiel unter der Lupe",
+      "description": "Eine Lernserie über Zahlenzug, eine Progressive Web App in TypeScript, in der Kleinkinder einen Zug aus Zahlenwaggons zusammenbauen – mit SVG-Grafik, synthetisiertem Ton und ganz ohne Framework.",
+      "lang": "de",
+      "mode": "learn",
+      "created": "2026-10-25T15:12:21+00:00",
+      "episodes": 12,
+      "path": "podcasts/KamilKirstein90__zahlenzug/episodes.json"
+    }
+  ]
+}

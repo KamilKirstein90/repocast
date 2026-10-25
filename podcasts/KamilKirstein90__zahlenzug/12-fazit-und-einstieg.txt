@@ -1,0 +1,25 @@
+Nach der Code-Review folgt jetzt die letzte Folge, in der wir zusammenfassen, was Zahlenzug stark macht, wo seine Grenzen liegen und wie du am besten selbst in den Code einsteigst.
+
+Erinnern wir uns kurz. Zahlenzug ist ein Zählspiel für Kinder von zwei bis drei Jahren. Eine Lok wartet auf den Schienen, das Kind tippt die Waggons von eins bis zehn in der richtigen Reihenfolge an, und der Zug wächst, bis er unter Konfetti davondampft. Technisch ist es eine Progressive Web App in TypeScript, gebaut mit Vite, ohne Framework, ohne Spiel-Engine, ohne eine einzige Bild- oder Audiodatei.
+
+Was sind die Stärken? Die größte Stärke ist der klare Fokus. Jede technische Entscheidung dient dem Kind am Bildschirm oder den Eltern daneben. Falsche Tipps werden nicht bestraft, sondern freundlich quittiert. Zögern wird mit einem sanften Hinweis beantwortet. Zahlen sind gleichzeitig Ziffer, Farbe, Punktmenge und gesprochenes Wort. Die Einstellungen sind hinter einem langen Druck versteckt, das Kontextmenü ist abgeschaltet, und der Vollbildmodus hält das Kind im Spiel.
+
+Die zweite Stärke ist der Minimalismus. Mit vier kleinen Modulen und null Laufzeitabhängigkeiten ist das Projekt in einem Nachmittag vollständig zu verstehen. Grafik als SVG im Code und Ton aus dem Synthesizer des Browsers machen die App winzig und damit ideal für den Offline-Betrieb.
+
+Die dritte Stärke ist die moderne Nutzung der Web-Plattform. Die Web Animations Schnittstelle mit await, der native Dialog mit Formularmethode dialog, CSS-Variablen für das Layout und ein Service Worker mit network first Strategie zeigen, wie viel heute ohne Bibliotheken möglich ist. Wenn du diese Schnittstellen bisher nur vom Hörensagen kennst, ist dieses Repo ein hervorragendes Lernbeispiel.
+
+Und die Grenzen? Inhaltlich ist das Spiel bewusst schmal. Es gibt nur das Zählen von eins bis fünf oder bis zehn, keine Fortschrittsverfolgung, keine weiteren Spielmodi und nur deutsche Sprache. Die Ablenkungszahlen sind rein zufällig. Technisch fehlen Tests, die Funktion couple hat die Race Condition aus der letzten Folge, und die Sprachausgabe hängt von den Stimmen ab, die das jeweilige Gerät mitbringt. Auf manchen Geräten kann die deutsche Stimme fehlen oder anders klingen. Und die native Android-App über Capacitor ist bisher nur angekündigt, nicht umgesetzt.
+
+Wo solltest du anfangen, wenn du den Code selbst lesen willst? Mein Vorschlag ist eine Reihenfolge in vier Schritten.
+
+Erstens die index Datei. Sie ist kurz und zeigt dir alle Elemente, mit denen der Code später arbeitet: Zug-Container, Auswahl-Container, Overlay, Zahnrad und Dialog.
+
+Zweitens die game Datei. Sie ist die kleinste und ruhigste Datei, ohne DOM, nur Einstellungen und die Auswahl-Logik. Ein perfekter Einstieg, und gleichzeitig ein guter Ort für deinen ersten eigenen Beitrag, etwa ein paar Unit-Tests.
+
+Drittens main, und zwar in der Reihenfolge, in der das Spiel abläuft. Fang unten beim Klick-Handler des Play-Knopfes an, springe dann zu startRound, showChoices, onPick, couple und schließlich finish. Damit hast du den kompletten Spielfluss. Die Effektfunktionen für Sterne, Konfetti und Dampf kannst du danach als Bonus lesen.
+
+Viertens train und audio, je nachdem, ob dich Grafik oder Ton mehr interessiert. Beide Dateien sind in sich abgeschlossen und laden zum Experimentieren ein. Ändere doch einmal die Frequenzen der Fanfare oder die Farben der Waggons und schau dir das Ergebnis direkt auf dem Handy an.
+
+Und wenn du mitmachen willst, gibt es naheliegende Ideen: die Rundenprüfung in couple ergänzen, Tests für die Auswahl-Logik schreiben, den Service Worker um das Aufräumen alter Caches erweitern, zugängliche Beschriftungen für die Buttons hinzufügen oder vielleicht einen neuen Modus, bei dem rückwärts gezählt wird.
+
+Damit sind wir am Ende dieser Serie. Du hast gesehen, wie ein kleines, liebevolles Projekt mit wenigen hundert Zeilen ein rundes Erlebnis schafft, und welche Web-Techniken dahinter stecken. Ich hoffe, du hast Lust bekommen, das Repository zu klonen, den Entwicklungsserver zu starten und den Zug einmal selbst über deinen Bildschirm fahren zu lassen. Vielleicht sogar zusammen mit einem kleinen Mitspieler. Danke fürs Zuhören und bis zum nächsten Mal.
