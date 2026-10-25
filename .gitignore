@@ -1,0 +1,17 @@
+work/
+site/
+prototype/
+service/logs/
+service/state.json
+__pycache__/
+
+# Android
+android/.gradle/
+android/.kotlin/
+android/build/
+android/app/build/
+android/local.properties
+android/keystore.properties
+*.jks
+*.keystore
+.idea/
