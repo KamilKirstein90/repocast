@@ -97,8 +97,21 @@ def parse_request(issue: dict) -> dict:
     return {"url": f"https://github.com/{owner}/{name}", "owner": owner, "name": name, "lang": lang, "mode": mode}
 
 
+def reusable_scripts(job_dir: Path, req: dict) -> bool:
+    """A failed earlier run (e.g. TTS) already has scripts for the same request: don't spend Claude usage again."""
+    try:
+        job = json.loads((job_dir / "job.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    same = all(job.get(k) == req[k] for k in ("url", "lang", "mode"))
+    return same and (job_dir / "out" / "episodes.json").exists()
+
+
 def build_podcast(req: dict) -> tuple[dict, dict]:
     job_dir = WORK / f"{req['owner']}__{req['name']}"
+    if reusable_scripts(job_dir, req):
+        log.info("Reusing existing scripts in %s", job_dir)
+        return generate.main(job_dir, SITE), {"reused": True}
     if job_dir.exists():
         shutil.rmtree(job_dir, onerror=lambda f, p, _: (Path(p).chmod(0o666), f(p)))
     (job_dir / "out" / "scripts").mkdir(parents=True)
@@ -155,15 +168,17 @@ def handle(issue: dict, state: dict) -> None:
         return
 
     gh("issue", "edit", number, "--add-label", "processing")
-    state["jobs"] += 1
-    save_state(state)
+    if not reusable_scripts(WORK / f"{req['owner']}__{req['name']}", req):  # only Claude runs count
+        state["jobs"] += 1
+        save_state(state)
     try:
         meta, usage = build_podcast(req)
         publish(meta["repo"])
         minutes = sum(len((SITE / ep["text"]).read_text(encoding="utf-8").split()) for ep in meta["episodes"]) // 140
+        claude_info = ("Scripts reused from an earlier run, no Claude usage." if usage.get("reused") else
+                       f"Claude: {usage.get('turns')} turns, {total_tokens(usage):,} tokens, {usage.get('duration_s')} s")
         gh("issue", "comment", number, "--body",
-           f"✅ {len(meta['episodes'])} episodes (~{minutes} min) ready: {PAGES_URL}\n\n"
-           f"Claude: {usage.get('turns')} turns, {total_tokens(usage):,} tokens, {usage.get('duration_s')} s")
+           f"✅ {len(meta['episodes'])} episodes (~{minutes} min) ready: {PAGES_URL}\n\n{claude_info}")
         gh("issue", "edit", number, "--remove-label", "processing", "--add-label", "done")
         log.info("Issue #%s done", number)
     except Exception as e:  # report every failure back to the app instead of crashing the loop

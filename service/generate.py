@@ -8,6 +8,7 @@ import asyncio
 import json
 import shutil
 import sys
+import unicodedata
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,8 +17,49 @@ import edge_tts
 VOICES = {"de": "de-DE-ConradNeural", "en": "en-US-AndrewNeural"}
 
 
+# edge-tts is an unofficial service that randomly returns no audio now and then. Small chunks
+# keep each retry cheap; the MP3 pieces share one format, so they can simply be concatenated.
+CHUNK_CHARS = 1200
+RETRY_DELAYS = [2, 5, 15, 30, 60, 120]
+
+
+def speakable(text: str) -> str:
+    """Drop letters from non-Latin scripts (e.g. Cyrillic examples) that the voice cannot read."""
+    return "".join(
+        ch for ch in text
+        if not unicodedata.category(ch).startswith("L") or unicodedata.name(ch, "").startswith("LATIN")
+    )
+
+
+def chunks(text: str) -> list[str]:
+    """Group paragraphs into pieces of roughly CHUNK_CHARS."""
+    pieces, current = [], ""
+    for para in (p.strip() for p in text.split("\n\n")):
+        if current and len(current) + len(para) > CHUNK_CHARS:
+            pieces.append(current)
+            current = ""
+        current = f"{current}\n\n{para}" if current else para
+    return [*pieces, current] if current else pieces
+
+
+async def synthesize_chunk(text: str, voice: str) -> bytes:
+    for attempt, delay in enumerate([0, *RETRY_DELAYS]):
+        await asyncio.sleep(delay)
+        try:
+            audio = bytearray()
+            async with asyncio.timeout(90):
+                async for message in edge_tts.Communicate(text, voice).stream():
+                    if message["type"] == "audio":
+                        audio.extend(message["data"])
+            return bytes(audio)
+        except Exception as e:
+            print(f"  attempt {attempt + 1} failed: {e!r}")
+    raise RuntimeError(f"Text-to-speech failed after {len(RETRY_DELAYS) + 1} attempts: {text[:80]!r}")
+
+
 async def synthesize(text: str, voice: str, target: Path) -> None:
-    await edge_tts.Communicate(text, voice).save(str(target))
+    audio = b"".join([await synthesize_chunk(piece, voice) for piece in chunks(text)])
+    target.write_bytes(audio)
 
 
 def main(job_dir: Path, site_dir: Path) -> dict:
@@ -35,7 +77,7 @@ def main(job_dir: Path, site_dir: Path) -> dict:
         script = job_dir / "out" / "scripts" / f"{ep['file']}.txt"
         text = script.read_text(encoding="utf-8")
         print(f"TTS {ep['file']} ({len(text.split())} words)")
-        asyncio.run(synthesize(text, voice, target / f"{ep['file']}.mp3"))
+        asyncio.run(synthesize(speakable(text), voice, target / f"{ep['file']}.mp3"))
         shutil.copy(script, target / f"{ep['file']}.txt")
         ep["audio"] = f"podcasts/{slug}/{ep['file']}.mp3"
         ep["text"] = f"podcasts/{slug}/{ep['file']}.txt"

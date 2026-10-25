@@ -26,7 +26,7 @@ Write each episode to `out/scripts/NN-slug.txt` (NN = 01, 02, …), in the langu
 Spoken-style rules — this text is read aloud by a TTS voice:
 - Natural, friendly podcast tone, one narrator, speak to the listener directly. Start each episode with a one-sentence recap/hook, end with a short teaser for the next one.
 - 450–800 words per episode (about 3–6 minutes).
-- No Markdown, no lists with symbols, no code blocks, no URLs, no emoji. Write numbers and abbreviations the way they should be spoken.
+- No Markdown, no lists with symbols, no code blocks, no URLs, no emoji. Only use the Latin alphabet: describe characters from other scripts in words instead of writing them ("a Cyrillic letter"). Write numbers and abbreviations the way they should be spoken.
 - Never read code or commands character by character. Paraphrase them ("you install the dependencies with npm install"). Exact commands and code go into `episodes.json` instead.
 - Mention file and function names only when they help; say them naturally.
 
