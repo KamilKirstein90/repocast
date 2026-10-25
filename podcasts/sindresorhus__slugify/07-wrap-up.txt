@@ -1,0 +1,21 @@
+We've explored slugify from its purpose to its pipeline, its options and its counter. To close the series, let's step back and ask: what does this library do really well, where are its limits, and how should you approach the code yourself?
+
+Let's start with the strengths. The first is focus. Slugify does one thing, it does it well, and it delegates the hardest part, transliteration across dozens of languages, to a dedicated sibling package. That keeps the core small enough to read in one sitting, which is rare for a library used this widely.
+
+The second strength is attention to the details that humans notice. Plenty of slug libraries can handle spaces and accents. Fewer get possessives right, so Conway's Law doesn't turn into conway dash s dash law. Fewer understand that A P I s is a plural acronym, not A P I followed by a lonely s. Fewer handle the Swedish versus German treatment of umlauts through a locale option. These small touches are what make the output look intentional.
+
+The third strength is defensive engineering. In two separate places the source contains comments about avoiding quadratic backtracking in regular expressions, once in decamelize and once in the counter suffix logic. One of these was a real bug where a crafted input took more than thirty seconds, and it now has a regression test with a time limit. If you slugify user generated content on a server, this kind of care really matters.
+
+The fourth strength is the test suite. It reads like a specification. Each test is a list of inputs and expected outputs, grouped by feature or by language, from German and Vietnamese to Pashto and Armenian, with comments explaining why the trickier cases exist. Combined with the typed and documented declarations file, it's very easy to understand what the library promises.
+
+Now the limits. First, it's ES modules only and requires Node twenty or newer. For modern projects that's fine, but older CommonJS setups will need some adjustment. Second, the output quality for non Latin scripts depends entirely on the transliterate package. Transliteration is inherently lossy and opinionated. Chinese characters, for example, are not something it romanizes in a meaningful way, and a test shows such characters simply being dropped in the default mode. If you need culturally precise romanization for a specific language, you may need custom replacements or a different tool.
+
+Third, some option combinations have behavior you might not guess without reading the docs. Turning off transliteration also disables the built in replacements for the ampersand, heart and unicorn. Preserving the apostrophe still won't keep it in contractions. And the counter's numbering rules around inputs that already end in numbers are well tested but not exactly obvious. None of this is wrong, but it's worth knowing.
+
+Fourth, there's no option for a maximum length. If you need slugs capped at, say, sixty characters, you'll have to truncate the result yourself, and take care not to leave a separator dangling at the end.
+
+So where should you start reading? Open index dot js and scroll straight to the default export, the slugify function. Read it top to bottom; it's a linear list of steps and you can map each line to a step we discussed. Then go back up and read the helpers, starting with decamelize and its comments about acronyms and plurals. After that, read slugify with counter at the bottom and its collision loop. Finally, open test dot js alongside it. Pick any test that surprises you and trace it through the code. That's the fastest way to really internalize how it works.
+
+If you want to go further, the natural next step is the transliterate package, which is where the language tables live, and maybe the related filenamify package, which tackles the neighboring problem of making strings safe as filenames.
+
+And that's the end of our series on slugify. Thanks for listening, and the next time you see a tidy little dash separated URL, you'll know just how much thought can go into those few characters.

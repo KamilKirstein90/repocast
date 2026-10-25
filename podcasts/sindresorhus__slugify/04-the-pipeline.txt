@@ -1,0 +1,21 @@
+In the last episode we saw the big picture of the repository. Now let's follow a single string all the way through the slugify function and see what each step does to it.
+
+The very first thing slugify does is check that you actually passed a string. If you pass a number or undefined, it throws a type error that tells you what type it got instead. Then it builds the effective options by spreading your options over a set of defaults: the separator is a dash, lowercase is on, decamelize is on, transliterate is on, and the preserve options are off or empty.
+
+Next it takes two quick notes before anything is modified. Does the original string start with an underscore, and did you ask to preserve leading underscores? Does it end with a dash, and did you ask to preserve trailing dashes? It remembers those two answers, because the later steps will strip those characters, and they need to be added back at the very end.
+
+Step one is transliteration. Slugify combines the built in replacements, ampersand to "and", heart to "love", unicorn to "unicorn", with your custom replacements into a single map. Because your entries come second, a custom replacement with the same key wins. That map, plus an optional locale, is passed to the transliterate package, which turns accented and non Latin characters into plain Latin letters. So "Hællæ" becomes haellae, and Russian or Arabic letters become their common romanizations.
+
+Step two is decamelizing, and this is where it gets interesting. The helper uses three regular expressions in a row. The first puts a space between a run of at least two capital letters and a number, so FOO three sixty becomes FOO, space, three sixty. The second puts a space between a lowercase letter or digit and a following capital, which is the classic fooBar to foo Bar split. The third handles acronyms followed by words, so A P I Section becomes A P I, space, Section. That third pattern has a lovely detail: it uses a negative lookahead so that a lowercase s right after an acronym is treated as a plural, not as the start of a new word. That's why A P I s stays as apis, while A P I Usage still gets split. The tests cover cases like X M L Http A P I Response and get A P I s Now, and they all come out the way a human would write them.
+
+There's also a comment in the source explaining that each pattern deliberately captures as little leading context as possible. A greedy quantifier there could cause quadratic backtracking on long runs of the same kind of character. That's a defense against so called regular expression denial of service, where a carefully crafted input makes a regex take forever.
+
+Step three is lowercasing. If you passed a locale, slugify uses locale aware lowercasing, which matters for languages like Turkish where the rules for the letter i differ.
+
+Step four handles contractions and possessives. Without it, "Conway's Law" would become conway dash s dash law, because the apostrophe is a disallowed character and gets turned into a separator. So before that happens, slugify removes the apostrophe in a word final apostrophe t or apostrophe s, but only when a letter or digit comes before it and no letter or digit follows it. It handles both the straight apostrophe and the curly typographic one. So "Don't Repeat Yourself" becomes dont repeat yourself, while something odd like foo apostrophe s bar is left alone and becomes foo dash sbar. When transliteration is off, the definition of a letter widens to all Unicode letters, so it stays consistent with what survives later.
+
+Step five is the actual slugging. The pattern built by build pattern slug matches one or more characters that are not allowed, and every such run gets replaced with the separator. Allowed by default are lowercase letters and digits, plus capitals if lowercase is off, plus any characters you chose to preserve. Then any stray backslashes are removed.
+
+Step six is cleanup. Remove moot separators collapses two or more separators in a row into one and strips separators from the start and end. It escapes the separator first, so even multi character separators like a double underscore work correctly. Finally, the underscore and dash noted at the start are added back if needed.
+
+Next time, we'll focus on the options you can pass, and when each of them is actually useful in practice.

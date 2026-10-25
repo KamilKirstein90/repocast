@@ -1,0 +1,21 @@
+Last time we learned what a slug is and why turning text into one is harder than it looks. Today, let's actually get slugify running.
+
+Installation is as simple as it gets. The package is published on npm under the scoped name at sindresorhus slash slugify. So in your project you run npm install followed by that package name, and you're done. There are exactly two runtime dependencies that come along: the transliterate package from the same author, and a tiny helper called escape string regexp. No native code, no build step.
+
+There are two requirements worth knowing about before you start. First, the package needs Node version twenty or newer. That is declared in the engines field of the package json file. Second, the package is a pure ES module. Its package json sets the type to module, and it only exposes an import entry point. That means you use the import statement, not require. If you are working in an older CommonJS project, you either need to switch that file to ES modules or use a dynamic import. This is a deliberate choice that Sindre Sorhus made across many of his packages a few years ago, so if you've used his other libraries, this will feel familiar.
+
+Now, your first call. You import the default export, which is the slugify function, and you pass it a string. That's it. For example, passing "Foo Bar" gives you foo dash bar. Passing a string with leading and trailing spaces, accents and an exclamation mark, like "Déjà Vu!" surrounded by spaces, gives you a clean deja dash vu. Passing "fooBar 123" followed by a few symbols like a dollar sign, a hash and a percent sign gives you foo dash bar dash one two three. The symbols just vanish, the camel case gets split, and the number stays.
+
+The function takes an optional second argument, an options object. We'll go through all the options in a later episode, but just to give you a taste: you can pass a separator, for example an underscore, and you'll get foo underscore bar instead of foo dash bar. Or you can set lowercase to false if you want to keep the original casing.
+
+If you need unique slugs, for example for heading anchors on a page, you import the named export called slugify with counter. Calling it doesn't slugify anything yet. Instead, it returns a new slugify function that has its own memory. Every time you call that function with the same text, you get a new numbered variant. And it has a reset method if you want to start over, for example when you render the next page.
+
+If you use TypeScript, you get full type definitions out of the box. The file index dot d dot ts describes the options type, the slugify function, and a type called countable slugify for the counter version. Every option there is documented with a default value and an example, so your editor's hover tooltips become a pretty good reference.
+
+What if you want to contribute, or just poke around in the code? Clone the repository, run npm install inside it to get the development dependencies, and then run npm test. The test script does two things in sequence. First it runs x o, which is Sindre's opinionated linter built on top of ESLint. It enforces a consistent code style, including tabs for indentation. If linting passes, it runs ava, a test runner that executes the tests in the file test dot js. There is no separate build or compile step, because the source file is the file that gets published.
+
+The same commands run in continuous integration. There's a GitHub Actions workflow that triggers on every push and every pull request, and it runs the full test suite on two Node versions, twenty and twenty four, so the minimum supported version and a current one are both covered.
+
+One more practical tip: if you want slugify on the command line, the readme points to a separate companion package called slugify cli. It's not part of this repository, but it wraps this exact library.
+
+In the next episode, we'll zoom out and look at the architecture: which files exist in this repo, what each one is responsible for, and how the pieces fit together.

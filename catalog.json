@@ -9,6 +9,16 @@
       "created": "2026-10-25T15:12:21+00:00",
       "episodes": 12,
       "path": "podcasts/KamilKirstein90__zahlenzug/episodes.json"
+    },
+    {
+      "repo": "sindresorhus/slugify",
+      "title": "Slugify: Small String, Big Details",
+      "description": "A seven-part tour of Sindre Sorhus's slugify library: how it turns any text into clean, URL-safe slugs, and the surprising edge cases hidden in roughly one hundred sixty lines of JavaScript.",
+      "lang": "en",
+      "mode": "overview",
+      "created": "2026-10-25T16:50:26+00:00",
+      "episodes": 7,
+      "path": "podcasts/sindresorhus__slugify/episodes.json"
     }
   ]
 }

@@ -1,0 +1,23 @@
+We've installed slugify and made our first calls. Now let's open the repository and look at how it's built, because the structure tells you a lot about the philosophy behind it.
+
+The first thing you'll notice is how few files there are. There is no source folder, no lib folder, no build output. Everything sits at the top level. There are just three files that actually ship to npm, and the package json lists them explicitly in its files field: index dot js, index dot d dot ts, and overridable replacements dot js. Everything else in the repo, like the tests, the readme, the editor config and the GitHub workflow, is there for development only.
+
+Let's go through those three files.
+
+Index dot js is the heart of the library. It contains all the logic in about one hundred sixty lines. At the top it imports its two dependencies and the list of built in replacements. Then come a handful of small private helper functions, each doing one job. There's decamelize, which splits camel case words apart using three regular expressions. There's remove moot separators, which collapses doubled separators and trims them from the start and end. There's remove counter suffix, which is used only by the counter feature to strip trailing numbers from a slug. And there's build pattern slug, which constructs the regular expression that decides which characters are allowed to survive into the slug.
+
+After the helpers come the two exported functions. The default export, slugify, is the main pipeline. And the named export, slugify with counter, is a factory that wraps slugify with some memory. Notice the layering here: the counter version never duplicates any slug logic. It simply calls slugify and then post processes the result. That's a nice example of composition.
+
+The second shipped file, overridable replacements dot js, is tiny. It exports a list of three pairs: the ampersand becomes the word "and", the unicorn emoji becomes the word "unicorn", and the heart symbol becomes the word "love". Each replacement is padded with spaces on both sides, so the word ends up separated by dashes from its neighbors. It's a separate file so the defaults are easy to find and so the name makes the intent clear: these are defaults the user can override by supplying a replacement with the same key.
+
+The third shipped file, index dot d dot ts, contains the TypeScript types. It's hand written, not generated. It defines an options type where every property is read only and optional, the signature of slugify, and a type for the counter function, which is both callable and has a reset method attached. The documentation comments there mirror the readme almost word for word.
+
+Now, how do the parts talk to each other? The flow is simple and linear. Your code calls slugify with a string and maybe some options. Slugify merges your options over a set of defaults. If transliteration is on, it builds a map from the built in replacements plus your custom ones and hands the string to the external transliterate package, along with an optional locale. That package converts characters like ä, ж, or ث into Latin equivalents. Back in slugify, the string flows through decamelize, lowercasing, contraction handling, and then the pattern from build pattern slug replaces every run of disallowed characters with your separator. Finally remove moot separators tidies up, and the optional leading underscore and trailing dash are put back.
+
+The second dependency, escape string regexp, is used whenever user supplied characters end up inside a regular expression, namely the separator and any preserved characters. Without escaping, a separator like a dot would mean "any character" to the regex engine and wreck the output.
+
+Then there's test dot js, a single file with about twenty five ava tests and close to two hundred assertions. It's worth reading as documentation, because each test is a list of input and expected output pairs, and many have comments explaining why an edge case matters.
+
+Rounding things out, there's a security policy file in the GitHub folder, an editorconfig for consistent formatting, and an npmrc that disables the package lock file, which is common for libraries.
+
+In the next episode we'll go deep into the main pipeline itself, step by step, and look at the clever details in decamelizing and handling apostrophes.

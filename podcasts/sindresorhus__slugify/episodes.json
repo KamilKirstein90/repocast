@@ -1,0 +1,249 @@
+{
+  "repo": "sindresorhus/slugify",
+  "title": "Slugify: Small String, Big Details",
+  "description": "A seven-part tour of Sindre Sorhus's slugify library: how it turns any text into clean, URL-safe slugs, and the surprising edge cases hidden in roughly one hundred sixty lines of JavaScript.",
+  "lang": "en",
+  "mode": "overview",
+  "episodes": [
+    {
+      "n": 1,
+      "file": "01-what-and-why",
+      "title": "What Is a Slug, and Why Is It Hard?",
+      "summary": "What slugify does, who it is for, and why naive slug generation breaks on real-world text.",
+      "kind": "overview",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "readme.md",
+          "startLine": 15,
+          "endLine": 34,
+          "note": "Basic usage examples: emoji, accents, camel case, possessives and Cyrillic input"
+        }
+      ],
+      "audio": "podcasts/sindresorhus__slugify/01-what-and-why.mp3",
+      "text": "podcasts/sindresorhus__slugify/01-what-and-why.txt"
+    },
+    {
+      "n": 2,
+      "file": "02-getting-started",
+      "title": "Installing and First Steps",
+      "summary": "Installing the ES-module-only package, first calls with and without options, and running the lint and test suite.",
+      "kind": "install",
+      "commands": [
+        "npm install @sindresorhus/slugify",
+        "import slugify, {slugifyWithCounter} from '@sindresorhus/slugify';",
+        "slugify('Foo Bar'); //=> 'foo-bar'",
+        "slugify('foo bar', {separator: '_'}); //=> 'foo_bar'",
+        "npm install",
+        "npm test"
+      ],
+      "snippets": [
+        {
+          "path": "package.json",
+          "startLine": 13,
+          "endLine": 24,
+          "note": "ES module type, exports map, Node 20+ engine requirement and the xo && ava test script"
+        },
+        {
+          "path": "package.json",
+          "startLine": 49,
+          "endLine": 56,
+          "note": "The two runtime dependencies and the dev tooling"
+        },
+        {
+          "path": ".github/workflows/main.yml",
+          "startLine": 1,
+          "endLine": 21,
+          "note": "CI runs npm test on Node 20 and 24 for every push and pull request"
+        }
+      ],
+      "audio": "podcasts/sindresorhus__slugify/02-getting-started.mp3",
+      "text": "podcasts/sindresorhus__slugify/02-getting-started.txt"
+    },
+    {
+      "n": 3,
+      "file": "03-architecture",
+      "title": "Three Files and a Pipeline",
+      "summary": "The flat repository layout, the helpers and exports in index.js, the default replacements and the hand-written type definitions.",
+      "kind": "architecture",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "package.json",
+          "startLine": 25,
+          "endLine": 29,
+          "note": "Only three files are published to npm"
+        },
+        {
+          "path": "overridable-replacements.js",
+          "startLine": 1,
+          "endLine": 7,
+          "note": "Built-in replacements, padded with spaces so they become separate words"
+        },
+        {
+          "path": "index.js",
+          "startLine": 1,
+          "endLine": 3,
+          "note": "Imports: escape-string-regexp, transliterate, and the default replacements"
+        },
+        {
+          "path": "index.d.ts",
+          "startLine": 223,
+          "endLine": 291,
+          "note": "Public API types: slugify, the CountableSlugify type with reset, and slugifyWithCounter"
+        }
+      ],
+      "audio": "podcasts/sindresorhus__slugify/03-architecture.mp3",
+      "text": "podcasts/sindresorhus__slugify/03-architecture.txt"
+    },
+    {
+      "n": 4,
+      "file": "04-the-pipeline",
+      "title": "Following a String Through slugify",
+      "summary": "Step by step through the main function: defaults, transliteration, decamelizing acronyms, contractions, pattern replacement and cleanup.",
+      "kind": "feature",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "index.js",
+          "startLine": 57,
+          "endLine": 89,
+          "note": "Type check, option defaults, remembered underscore/dash flags and the transliteration step"
+        },
+        {
+          "path": "index.js",
+          "startLine": 5,
+          "endLine": 13,
+          "note": "decamelize: three regexes, including the plural-acronym lookahead and ReDoS-aware design"
+        },
+        {
+          "path": "index.js",
+          "startLine": 101,
+          "endLine": 123,
+          "note": "Contraction handling, separator replacement, cleanup and restoring preserved edges"
+        },
+        {
+          "path": "index.js",
+          "startLine": 15,
+          "endLine": 21,
+          "note": "removeMootSeparators collapses and trims escaped separators"
+        }
+      ],
+      "audio": "podcasts/sindresorhus__slugify/04-the-pipeline.mp3",
+      "text": "podcasts/sindresorhus__slugify/04-the-pipeline.txt"
+    },
+    {
+      "n": 5,
+      "file": "05-options",
+      "title": "Turning the Knobs: Every Option Explained",
+      "summary": "Separator, lowercase, decamelize, custom replacements, preserve flags, locale and transliterate, with real use cases for each.",
+      "kind": "feature",
+      "commands": [
+        "slugify('BAR and baz', {separator: ''}); //=> 'barandbaz'",
+        "slugify('foo@unicorn', {customReplacements: [['@', ' at ']]}); //=> 'foo-at-unicorn'",
+        "slugify('foo-bar-', {preserveTrailingDash: true}); //=> 'foo-bar-'",
+        "slugify('foo_bar#baz', {preserveCharacters: ['#']}); //=> 'foo-bar#baz'",
+        "slugify('Räksmörgås', {locale: 'sv'}); //=> 'raksmorgas'",
+        "slugify('Déjà Vu', {transliterate: false}); //=> 'déjà-vu'"
+      ],
+      "snippets": [
+        {
+          "path": "index.js",
+          "startLine": 34,
+          "endLine": 55,
+          "note": "buildPatternSlug: how lowercase, transliterate and preserveCharacters shape the allowed set, and the separator guard"
+        },
+        {
+          "path": "index.js",
+          "startLine": 77,
+          "endLine": 89,
+          "note": "Custom replacements merged over built-ins, or applied manually when transliteration is off"
+        },
+        {
+          "path": "test.js",
+          "startLine": 330,
+          "endLine": 354,
+          "note": "Behavior with transliterate disabled, including the missing built-in replacements"
+        }
+      ],
+      "audio": "podcasts/sindresorhus__slugify/05-options.mp3",
+      "text": "podcasts/sindresorhus__slugify/05-options.txt"
+    },
+    {
+      "n": 6,
+      "file": "06-unique-slugs-with-counter",
+      "title": "Unique Slugs with a Counter",
+      "summary": "How slugifyWithCounter hands out unique slugs, avoids cross-input collisions, and was hardened against a quadratic regex.",
+      "kind": "feature",
+      "commands": [
+        "const slugify = slugifyWithCounter();",
+        "slugify('foo bar'); //=> 'foo-bar'",
+        "slugify('foo bar'); //=> 'foo-bar-2'",
+        "slugify.reset();"
+      ],
+      "snippets": [
+        {
+          "path": "index.js",
+          "startLine": 126,
+          "endLine": 162,
+          "note": "The counter factory: occurrences map, returned set, collision loop and reset"
+        },
+        {
+          "path": "index.js",
+          "startLine": 23,
+          "endLine": 32,
+          "note": "removeCounterSuffix uses split and a loop instead of a backtracking-prone regex"
+        },
+        {
+          "path": "test.js",
+          "startLine": 265,
+          "endLine": 293,
+          "note": "Tests proving the same slug is never returned twice"
+        },
+        {
+          "path": "test.js",
+          "startLine": 356,
+          "endLine": 365,
+          "note": "ReDoS regression test with a time limit"
+        }
+      ],
+      "audio": "podcasts/sindresorhus__slugify/06-unique-slugs-with-counter.mp3",
+      "text": "podcasts/sindresorhus__slugify/06-unique-slugs-with-counter.txt"
+    },
+    {
+      "n": 7,
+      "file": "07-wrap-up",
+      "title": "Strengths, Limits and Where to Start Reading",
+      "summary": "What slugify does well, where its limits are, and a reading order for learning from the code.",
+      "kind": "wrapup",
+      "commands": [],
+      "snippets": [
+        {
+          "path": "index.js",
+          "startLine": 57,
+          "endLine": 124,
+          "note": "Start here: the main slugify function, read top to bottom"
+        },
+        {
+          "path": "test.js",
+          "startLine": 29,
+          "endLine": 52,
+          "note": "Acronym and plural tests that read like a specification"
+        },
+        {
+          "path": "test.js",
+          "startLine": 54,
+          "endLine": 106,
+          "note": "Possessive and contraction edge cases"
+        }
+      ],
+      "audio": "podcasts/sindresorhus__slugify/07-wrap-up.mp3",
+      "text": "podcasts/sindresorhus__slugify/07-wrap-up.txt"
+    }
+  ],
+  "review": null,
+  "url": "https://github.com/sindresorhus/slugify",
+  "sha": "3b17b2e84b97624a683aafaa38184bf2746fab22",
+  "voice": "en-US-AndrewNeural",
+  "created": "2026-10-25T16:50:26+00:00"
+}
