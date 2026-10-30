@@ -1,7 +1,24 @@
 package de.kamilkirstein.repocast.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import de.kamilkirstein.repocast.ui.theme.AppStyle
+import de.kamilkirstein.repocast.ui.theme.LocalAppStyle
+import de.kamilkirstein.repocast.ui.theme.Logo
+import de.kamilkirstein.repocast.ui.theme.colorScheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -32,6 +49,7 @@ import de.kamilkirstein.repocast.data.QUEUE_REPO
 fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
     val saved by vm.token.collectAsStateWithLifecycle()
     val update by vm.update.collectAsStateWithLifecycle()
+    val style = LocalAppStyle.current
     var token by rememberSaveable { mutableStateOf("") }
     var savedMessage by rememberSaveable { mutableStateOf(false) }
     val uriHandler = LocalUriHandler.current
@@ -42,7 +60,14 @@ fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
             Modifier.padding(padding).fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Text("GitHub-Token", style = MaterialTheme.typography.titleMedium)
+            Text("Design", style = MaterialTheme.typography.titleMedium)
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                AppStyle.entries.forEach { option ->
+                    StyleOption(option, selected = option == style, onClick = { vm.setStyle(option) }, Modifier.weight(1f))
+                }
+            }
+
+            Text("GitHub-Token", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 12.dp))
             Text(
                 "Ein Fine-grained Token, der nur Issues in $QUEUE_REPO schreiben darf. Damit sendet die App Aufträge an deinen PC.",
                 style = MaterialTheme.typography.bodySmall,
@@ -74,5 +99,40 @@ fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
                 }
             } ?: OutlinedButton(onClick = vm::checkForUpdate) { Text("Nach Updates suchen") }
         }
+    }
+}
+
+/** A small preview of a style in its own colors; tapping it switches the whole app. */
+@Composable
+private fun StyleOption(option: AppStyle, selected: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    val colors = colorScheme(option)
+    val shape = RoundedCornerShape(18.dp)
+    Column(
+        modifier
+            .clip(shape)
+            .border(
+                if (selected) 2.5.dp else 1.dp,
+                if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                shape,
+            )
+            .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
+            .background(colors.background)
+            .padding(12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Logo(option, Modifier.size(44.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            listOf(colors.primary, colors.secondary, colors.surfaceContainerHigh).forEach {
+                Box(Modifier.size(12.dp).clip(CircleShape).background(it))
+            }
+        }
+        Text(option.label, color = colors.onBackground, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(
+            option.tagline,
+            color = colors.onSurfaceVariant,
+            style = MaterialTheme.typography.labelSmall,
+            textAlign = TextAlign.Center,
+        )
     }
 }

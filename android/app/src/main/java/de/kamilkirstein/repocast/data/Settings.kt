@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import de.kamilkirstein.repocast.ui.theme.AppStyle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -19,9 +20,13 @@ class Settings(context: Context) {
     private val store = context.applicationContext.dataStore
     private val tokenKey = stringPreferencesKey("github_token")
     private val speedKey = floatPreferencesKey("speed")
+    private val styleKey = stringPreferencesKey("style")
 
     val token: Flow<String> = store.data.map { it[tokenKey].orEmpty() }
     val speed: Flow<Float> = store.data.map { it[speedKey] ?: 1f }
+    val style: Flow<AppStyle> = store.data.map { prefs ->
+        AppStyle.entries.firstOrNull { it.name == prefs[styleKey] } ?: AppStyle.NACHTRADIO
+    }
 
     /** Progress per episode, keyed by its audio path. */
     val progress: Flow<Map<String, EpisodeProgress>> = store.data.map { prefs ->
@@ -39,6 +44,8 @@ class Settings(context: Context) {
     suspend fun setToken(token: String) = store.edit { it[tokenKey] = token.trim() }
 
     suspend fun setSpeed(speed: Float) = store.edit { it[speedKey] = speed }
+
+    suspend fun setStyle(style: AppStyle) = store.edit { it[styleKey] = style.name }
 
     suspend fun saveProgress(audio: String, positionMs: Long, durationMs: Long) = store.edit {
         it[longPreferencesKey("pos:$audio")] = positionMs

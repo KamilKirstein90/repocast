@@ -1,5 +1,12 @@
 package de.kamilkirstein.repocast.ui
 
+import android.graphics.Color
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.navigationBars
@@ -8,6 +15,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,12 +27,36 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import de.kamilkirstein.repocast.data.PodcastEntry
+import de.kamilkirstein.repocast.ui.theme.RepoCastTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
-/** Navigation between the screens, with the mini player docked at the bottom. */
+/** Applies the chosen style and plays the intro once per app start, then shows the screens. */
 @Composable
 fun RepoCastApp(sharedUrl: MutableStateFlow<String?>) {
     val vm: AppViewModel = viewModel()
+    val style by vm.style.collectAsStateWithLifecycle()
+    var showSplash by rememberSaveable { mutableStateOf(true) }
+    val activity = LocalActivity.current as? ComponentActivity
+    val current = style ?: return
+
+    // Status bar icons must contrast with the style's background, not the system theme.
+    LaunchedEffect(current) {
+        val bars = if (current.dark) SystemBarStyle.dark(Color.TRANSPARENT)
+        else SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+        activity?.enableEdgeToEdge(statusBarStyle = bars, navigationBarStyle = bars)
+    }
+
+    RepoCastTheme(current) {
+        Crossfade(showSplash, animationSpec = tween(400), label = "splash") { splash ->
+            if (splash) SplashScreen(current, onFinished = { showSplash = false })
+            else Screens(vm, sharedUrl)
+        }
+    }
+}
+
+/** Navigation between the screens, with the mini player docked at the bottom. */
+@Composable
+private fun Screens(vm: AppViewModel, sharedUrl: MutableStateFlow<String?>) {
     val nav = rememberNavController()
     val playerState by vm.player.state.collectAsStateWithLifecycle()
     val catalog by vm.catalog.collectAsStateWithLifecycle()

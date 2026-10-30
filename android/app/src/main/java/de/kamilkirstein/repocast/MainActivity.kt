@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import de.kamilkirstein.repocast.data.GITHUB_REPO_URL
 import de.kamilkirstein.repocast.ui.RepoCastApp
-import de.kamilkirstein.repocast.ui.theme.RepoCastTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainActivity : ComponentActivity() {
@@ -18,11 +17,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         sharedUrl.value = intent.sharedGitHubUrl()
-        setContent {
-            RepoCastTheme {
-                RepoCastApp(sharedUrl)
-            }
-        }
+        // RepoCastApp applies the user's chosen style itself.
+        setContent { RepoCastApp(sharedUrl) }
     }
 
     override fun onNewIntent(intent: Intent) {

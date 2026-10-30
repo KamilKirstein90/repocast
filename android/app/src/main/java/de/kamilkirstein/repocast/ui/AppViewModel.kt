@@ -15,6 +15,7 @@ import de.kamilkirstein.repocast.data.RepoCastApi
 import de.kamilkirstein.repocast.data.Settings
 import de.kamilkirstein.repocast.data.Snippet
 import de.kamilkirstein.repocast.player.PlayerConnection
+import de.kamilkirstein.repocast.ui.theme.AppStyle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,6 +41,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     val token: StateFlow<String> = settings.token.stateIn(viewModelScope, SharingStarted.Eagerly, "")
     val progress: StateFlow<Map<String, EpisodeProgress>> =
         settings.progress.stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+    /** The chosen look; null until it has been read from storage, so the app never flashes the wrong one. */
+    val style: StateFlow<AppStyle?> = settings.style.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
     private val podcasts = mutableMapOf<String, MutableStateFlow<Loadable<Podcast>>>()
 
@@ -92,6 +95,10 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
 
     fun saveToken(value: String) {
         viewModelScope.launch { settings.setToken(value) }
+    }
+
+    fun setStyle(style: AppStyle) {
+        viewModelScope.launch { settings.setStyle(style) }
     }
 
     fun checkForUpdate() {
