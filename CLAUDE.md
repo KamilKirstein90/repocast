@@ -13,6 +13,10 @@ Guidance for Claude Code sessions working in this repository.
 - Record non-obvious design decisions (and their reasons) under **Decisions**.
 - Do not reorder priorities on your own; propose changes instead.
 
+## Branching
+Follow the `branching-strategy` skill (`.claude/skills/branching-strategy/`): `main` + `feature/`, `fix/`, `infra/` branches, and a disposable `prototype` integration branch.
+Project specifics: releases (`android/release.ps1`) are built only from `main`; test APKs may be built from `prototype`.
+
 ## What RepoCast is
 Turns a GitHub repo into podcast episodes. See `README.md` for the full picture.
 ```

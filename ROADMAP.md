@@ -21,6 +21,7 @@ _Being worked on next, in this order._
 ## Decisions
 - 2026-10-30: Dropped Material You wallpaper colors; they gave the app a brown look. Three fixed designs instead (Nachtradio, Leinen, Dämmerung).
 - 2026-11-01: The plan lives in this file, not in GitHub issues, because issues are the podcast job queue.
+- 2026-11-01: Branching: `main` + short-lived `feature/`, `fix/`, `infra/` branches, plus a disposable `prototype` branch that collects in-progress features for testing but never merges into `main`. Defined in the reusable `branching-strategy` skill.
 
 ## Done
 - 2026-10-30 `4ce822b`: Three selectable designs, animated intro, new home screen.
